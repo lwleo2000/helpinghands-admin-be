@@ -1,0 +1,1 @@
+npm install express mongoose dotenv nodemon body-parser cors joi moment nanoid bcryptjs @hapi/joi@15.0.3 passport passport-local cookie-parser express-session jsonwebtoken aws-sdk sharp express-form-data csv-parse brain.js array-normalize age-calculator nodemailer firebase-admin cheerio node-schedule
