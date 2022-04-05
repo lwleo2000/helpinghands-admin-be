@@ -43,4 +43,4 @@ app.use("/loan-application", LoanApplicationRouter);
 app.use("/user-management", UserManagementRouter);
 app.use("/loan-plan-management", LoanPlanRouter);
 app.use("/loan-management", LoanManagementRouter);
-app.listen(8001);
+app.listen(process.env.PORT || 8001);
