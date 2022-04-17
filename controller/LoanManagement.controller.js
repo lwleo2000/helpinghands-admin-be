@@ -7,14 +7,19 @@ const moment = require("moment");
 
 exports.CompletePayment = async (req, res) => {
   try {
+    const account_number = req.user.account_number;
     const validated_data = await Joi.validate(
       req.body,
       LoanManagementValidator.CompletePayment
     );
     console.log(validated_data, 1234);
+
     const loan_application = await LoanApplicationModel.findOne({
       application_id: validated_data.application_id,
     });
+    const amount = loan_application.emi_plan.loan_emi;
+
+    await recordPaymentHistoryLog(loan_application, amount, account_number);
     const new_emi_due_date = moment(loan_application.payment.emi_due_date)
       .add(1, "months")
       .toDate();
@@ -37,6 +42,7 @@ exports.CompletePayment = async (req, res) => {
       new_emi_paid,
       333
     );
+
     const updated = await LoanApplicationModel.findOneAndUpdate(
       {
         application_id: validated_data.application_id,
@@ -168,8 +174,37 @@ exports.GetPaymentDetails = async (req, res) => {
     errorHandler(req, res, error);
   }
 };
+
 /*
 ============
 * Function *
 ============
 */
+const recordPaymentHistoryLog = async (
+  loan_application,
+  amount,
+  account_number
+) => {
+  var payment_history_log = loan_application.payment.payment_history_log;
+
+  payment_history_log.push({
+    payment_date: Date.now(),
+    payment_details:
+      "Admin (" +
+      account_number +
+      ") complete payment of RM" +
+      parseFloat(amount).toFixed(2) +
+      " using admin dashboard",
+  });
+
+  const update_payment_log = await LoanApplicationModel.findOneAndUpdate(
+    {
+      application_id: loan_application.application_id,
+    },
+    {
+      $set: {
+        "payment.payment_history_log": payment_history_log,
+      },
+    }
+  );
+};
