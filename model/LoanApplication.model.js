@@ -74,10 +74,12 @@ const paymentSchema = mongoose.Schema({
     type: Number,
     default: undefined,
   },
-  payment_history_log: {
-    type: Array,
-    default: undefined,
-  },
+  payment_history_log: [
+    {
+      payment_date: Date,
+      payment_details: String,
+    },
+  ],
 });
 
 const LoanApplicationScehema = mongoose.Schema({
